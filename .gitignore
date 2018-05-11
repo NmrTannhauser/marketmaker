@@ -3,6 +3,9 @@
 __pycache__
 mmenv
 tmp
+google
 db.sqlite3
 /static
 .DS_Store
+firstblood.zip
+market/migrations
