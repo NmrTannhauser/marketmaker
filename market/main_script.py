@@ -13,7 +13,9 @@ import os
 import config
 import telebot  #Используются API телеграма
 from test import getPK
+import logging
 
+logging.basicConfig(filename='server.log', level=logging.INFO)
 
 bot = telebot.TeleBot(config.token)
 
@@ -72,10 +74,8 @@ def mixorder(type,pair,amount,price):
         id = my_address.buy(assetPair=pair,amount = bid_amount, price = bid_price)
     else:
         id = my_address.sell(assetPair=pair,amount = bid_amount, price = bid_price)
-    print(type, pair, amount, price, id)
     return id.orderId
 key = getPK()
-print(key)
 market = market()
 pw.setNode(node=market.node, chain=market.chain)
 pw.setMatcher(node=market.matcher)
@@ -105,6 +105,7 @@ def getprices():
         ETHprice = float(pricelist[0][9].replace(',','.'))
         WAVESprice = float(pricelist[0][12].replace(',','.'))
     except Exception as e:
+        logging.error(e)
         BTCprice = 0
         ETHprice = 0
         WAVESprice = 0
@@ -180,7 +181,6 @@ try:
                     sellBTCtime = 0
             else:
                 BTCtradeallow = 1
-                oldBTCprice = newBTCprice
                 newBTCprice = BTCprice
             if (ETHprice == 0 or abs(newETHprice-ETHprice)>get['ThreshHold']):
                 ETHtradeallow = 0
@@ -192,7 +192,6 @@ try:
                     sellETHtime = 0
             else:
                 ETHtradeallow = 1
-                oldETHprice = newETHprice
                 newETHprice = ETHprice
             if (WAVESprice == 0 or abs(newWAVESprice-WAVESprice)>get['ThreshHold']):
                 WAVEStradeallow = 0
@@ -204,11 +203,9 @@ try:
                     sellWAVEStime = 0
             else:
                 WAVEStradeallow = 1
-                oldWAVESprice = newWAVESprice
                 newWAVESprice = WAVESprice
 
         if (status):                      #робот включен
-            print(time.time())
             if (oldstatus != status):               #только что включился
                 if (get['Buy']['amountBTCtoken'] and BTCtradeallow):
                     buyBTCtime = time.time()
@@ -241,7 +238,7 @@ try:
                     sellOrderWAVES = mixorder('sell',cryptomix_waves,get['Sell']['amountWAVEStoken'],WAVESpricetotal)
             else:                                           #обычный режим работы
                 if (get['Buy']['amountBTCtoken'] and ((oldBTCprice != newBTCprice) or  not(buyBTCtime)) and BTCtradeallow):
-                    if (len(buyOrderBTC)>0):
+                    if (len(buyOrderBTC)>5):
                         my_address.cancelOrderByID(cryptomix_btc, buyOrderBTC)
                         buyBTCtime = 0
                     buyBTCtime = time.time()
@@ -249,7 +246,7 @@ try:
                     buyOrderBTC = mixorder('buy',cryptomix_btc,get['Buy']['amountBTCtoken'],BTCpricetotal)
 
                 if (get['Buy']['amountETHtoken'] and ((oldETHprice != newETHprice) or  not(buyETHtime)) and ETHtradeallow):
-                    if (len(buyOrderETH)>0):
+                    if (len(buyOrderETH)>5):
                         my_address.cancelOrderByID(cryptomix_eth, buyOrderETH)
                         buyETHtime = 0
                     buyETHtime = time.time()
@@ -257,7 +254,7 @@ try:
                     buyOrderETH = mixorder('buy',cryptomix_eth,get['Buy']['amountETHtoken'],ETHpricetotal)
 
                 if (get['Buy']['amountWAVEStoken'] and ((oldWAVESprice != newWAVESprice) or  not(buyWAVEStime)) and WAVEStradeallow):
-                    if (len(buyOrderWAVES)>0):
+                    if (len(buyOrderWAVES)>5):
                         my_address.cancelOrderByID(cryptomix_waves, buyOrderWAVES)
                         buyWAVEStime = 0
                     buyWAVEStime = time.time()
@@ -265,7 +262,7 @@ try:
                     buyOrderWAVES = mixorder('buy',cryptomix_waves,get['Buy']['amountWAVEStoken'],WAVESpricetotal)
 
                 if (get['Sell']['amountBTCtoken'] and ((oldBTCprice != newBTCprice) or  not(sellBTCtime)) and BTCtradeallow):
-                    if (len(sellOrderBTC)>0):
+                    if (len(sellOrderBTC)>5):
                         my_address.cancelOrderByID(cryptomix_btc, sellOrderBTC)
                         sellBTCtime = 0
                     sellBTCtime = time.time()
@@ -273,7 +270,7 @@ try:
                     sellOrderBTC = mixorder('sell',cryptomix_btc,get['Sell']['amountBTCtoken'],BTCpricetotal)
 
                 if (get['Sell']['amountETHtoken'] and ((oldETHprice != newETHprice) or  not(sellETHtime)) and ETHtradeallow):
-                    if (len(sellOrderETH)>0):
+                    if (len(sellOrderETH)>5):
                         my_address.cancelOrderByID(cryptomix_eth, sellOrderETH)
                         sellETHtime = 0
                     sellETHtime = time.time()
@@ -281,7 +278,7 @@ try:
                     sellOrderETH = mixorder('sell',cryptomix_eth,get['Sell']['amountETHtoken'],ETHpricetotal)
 
                 if (get['Sell']['amountWAVEStoken'] and ((oldWAVESprice != newWAVESprice) or  not(sellWAVEStime)) and WAVEStradeallow):
-                    if (len(sellOrderWAVES)>0):
+                    if (len(sellOrderWAVES)>5):
                         my_address.cancelOrderByID(cryptomix_waves, sellOrderWAVES)
                         sellWAVEStime = 0
                     sellWAVEStime = time.time()
@@ -404,6 +401,29 @@ try:
                     sellWAVEStime = 0
 
         oldstatus = status
+        oldBTCprice = newBTCprice
+        oldETHprice = newETHprice
+        oldWAVESprice = newWAVESprice
         time.sleep(3)
+
 except Exception as e:
-    print('Error: ',e)
+    logging.error(e)
+    a.stop()
+    if (buyBTCtime):
+        my_address.cancelOrderByID(cryptomix_btc, buyOrderBTC)
+        buyBTCtime = 0
+    if (buyETHtime):
+        my_address.cancelOrderByID(cryptomix_eth, buyOrderETH)
+        buyETHtime = 0
+    if (buyWAVEStime):
+        my_address.cancelOrderByID(cryptomix_waves, buyOrderWAVES)
+        buyWAVEStime = 0
+    if (sellBTCtime):
+        my_address.cancelOrderByID(cryptomix_btc, sellOrderBTC)
+        sellBTCtime = 0
+    if (sellETHtime):
+        my_address.cancelOrderByID(cryptomix_eth, sellOrderETH)
+        sellETHtime = 0
+    if (sellWAVEStime):
+        my_address.cancelOrderByID(cryptomix_waves, sellOrderWAVES)
+        sellWAVEStime = 0
