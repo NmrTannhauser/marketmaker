@@ -1,6 +1,52 @@
 {% extends "html/header.html"%}
 
 {% block content %}
+<script type="text/javascript">
+  var priceBTC = {{BTC}}
+  var priceETH = {{ETH}}
+  var priceWAVES = {{WAVES}}
+  tmp = {'BTC': priceBTC, 'ETH': priceETH, 'WAVES': priceWAVES}
+</script>
+<script type="text/javascript">
+window.onload = function(){
+  document.getElementById('id_amountBTC').onchange = function(){
+        document.getElementById('id_amountBTCtoken').value = (this.value/tmp['BTC']).toFixed(8)
+  };
+  document.getElementById('id_amountETH').onchange = function(){
+        document.getElementById('id_amountETHtoken').value = (this.value/tmp['ETH']).toFixed(8)
+  };
+  document.getElementById('id_amountWAVES').onchange = function(){
+        document.getElementById('id_amountWAVEStoken').value = (this.value/tmp['WAVES']).toFixed(8)
+  };
+  document.getElementById('id_SamountBTC').onchange = function(){
+        document.getElementById('id_SamountBTCtoken').value = (this.value/tmp['BTC']).toFixed(8)
+  };
+  document.getElementById('id_SamountETH').onchange = function(){
+        document.getElementById('id_SamountETHtoken').value = (this.value/tmp['ETH']).toFixed(8)
+  };
+  document.getElementById('id_SamountWAVES').onchange = function(){
+        document.getElementById('id_SamountWAVEStoken').value = (this.value/tmp['WAVES']).toFixed(8)
+  };
+  document.getElementById('id_amountBTCtoken').onchange = function(){
+        document.getElementById('id_amountBTC').value = (this.value*tmp['BTC']).toFixed(8)
+  };
+  document.getElementById('id_amountETHtoken').onchange = function(){
+        document.getElementById('id_amountETH').value = (this.value*tmp['ETH']).toFixed(8)
+  };
+  document.getElementById('id_amountWAVEStoken').onchange = function(){
+        document.getElementById('id_amountWAVES').value = (this.value*tmp['WAVES']).toFixed(8)
+  };
+  document.getElementById('id_SamountBTCtoken').onchange = function(){
+        document.getElementById('id_SamountBTC').value = (this.value*tmp['BTC']).toFixed(8)
+  };
+  document.getElementById('id_SamountETHtoken').onchange = function(){
+        document.getElementById('id_SamountETH').value = (this.value*tmp['ETH']).toFixed(8)
+  };
+  document.getElementById('id_SamountWAVEStoken').onchange = function(){
+        document.getElementById('id_SamountWAVEStoken').value = (this.value*tmp['WAVES']).toFixed(8)
+  };
+};
+</script>
 Статус робота: {% if status %}OnLine {% else %} OffLine{% endif %}
 <form method="post" id='aa' action="{% url 'robot:index'%}">
   {% csrf_token %}

@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class WavesClient(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    privateKey = models.CharField(max_length = 60)
+    def __str__(self):
+        return 'wv'
+
 class Buy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amountBTC = models.DecimalField(default=0, max_digits = 16, decimal_places = 8)

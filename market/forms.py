@@ -6,6 +6,15 @@ from .models import Timeprice
 from .models import Timecheck
 from .models import Buyback
 from .models import Threshhold
+from .models import WavesClient
+
+class WavesClientForm(forms.ModelForm):
+    class Meta:
+        model = WavesClient
+        fields = {'privateKey'}
+        labels = {
+            'privateKey':'privateKey'
+        }
 
 class BuyForm(forms.ModelForm):
     class Meta:

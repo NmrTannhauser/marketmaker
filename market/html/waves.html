@@ -1,0 +1,9 @@
+{% extends "html/header.html"%}
+
+{% block content %}
+<form method="post" id='aa' action="{% url 'robot:waves'%}">
+  {% csrf_token %}
+  {{wavesform}}
+  <button name="submit" class="btn btn-primary">Применить</button>
+</form>
+{% endblock content %}

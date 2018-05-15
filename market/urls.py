@@ -9,4 +9,5 @@ urlpatterns = [
     path('login/', login, {'template_name': 'html/login.html'}, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
+    path('waves/', views.waves, name='waves')
 ]
