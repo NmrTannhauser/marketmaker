@@ -13,7 +13,10 @@ import os
 import config
 import telebot  #Используются API телеграма
 from test import getPK
+import logging
 
+
+logging.basicConfig(filename='/home/server.log', level=logging.INFO)
 
 bot = telebot.TeleBot(config.token)
 
@@ -105,6 +108,7 @@ def getprices():
         ETHprice = float(pricelist[0][9].replace(',','.'))
         WAVESprice = float(pricelist[0][12].replace(',','.'))
     except Exception as e:
+        logging.error(e)
         BTCprice = 0
         ETHprice = 0
         WAVESprice = 0
@@ -406,4 +410,4 @@ try:
         oldstatus = status
         time.sleep(3)
 except Exception as e:
-    print('Error: ',e)
+    logging.error(e)
