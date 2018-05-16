@@ -82,9 +82,9 @@ class BuybackForm(forms.ModelForm):
         fields = {'timebuyback', 'bbamountBTC', 'bbamountETH','bbamountWAVES'}
         labels = {
         'timebuyback': 'Выкупить через:',
-        'bbamountBTC': 'BTC',
-        'bbamountETH': 'ETH',
-        'bbamountWAVES': 'WAVES',
+        'bbamountBTC': 'для BTC:',
+        'bbamountETH': 'для ETH:',
+        'bbamountWAVES': 'для WAVES:',
         }
 
 class ThreshholdForm(forms.ModelForm):

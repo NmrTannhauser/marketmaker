@@ -43,11 +43,11 @@ window.onload = function(){
         document.getElementById('id_SamountETH').value = (this.value*tmp['ETH']).toFixed(8)
   };
   document.getElementById('id_SamountWAVEStoken').onchange = function(){
-        document.getElementById('id_SamountWAVEStoken').value = (this.value*tmp['WAVES']).toFixed(8)
+        document.getElementById('id_SamountWAVES').value = (this.value*tmp['WAVES']).toFixed(8)
   };
 };
 </script>
-Статус робота: {% if status %}OnLine {% else %} OffLine{% endif %}
+Статус робота: {% if status %}OnLine {% else %} OffLine{% endif %} 
 <form method="post" id='aa' action="{% url 'robot:index'%}">
   {% csrf_token %}
   <div class="col">
@@ -145,7 +145,7 @@ window.onload = function(){
       </p>
       <div class="row">
         <div class="col">
-          <p>Объём выкупа: </P>
+          <p>Объём выкупа в ТОКЕНАХ: </P>
           <p>{{buybackForm.bbamountBTC.label}}: {{buybackForm.bbamountBTC}}</p>
           <p>{{buybackForm.bbamountETH.label}}: {{buybackForm.bbamountETH}}</p>
           <p>{{buybackForm.bbamountWAVES.label}}: {{buybackForm.bbamountWAVES}}</p>
