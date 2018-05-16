@@ -173,6 +173,17 @@ def reviewIndex(request):
             try:
                 Buy.objects.all()[0].delete()
                 Sell.objects.all()[0].delete()
+                buyForm = BuyForm()
+                sellForm = SellForm()
+                statusForm = StatusForm(request.POST)
+                bb = buyForm.save(commit = False)
+                ss = sellForm.save(commit = False)
+                bb.user = request.user
+                ss.user = request.user
+                bb.status = True if request.POST['status'] == 'on' else False
+                ss.status = True if request.POST['status'] == 'on' else False
+                bb.save()
+                ss.save()
             except IndexError:{}
             buyForm = BuyForm()
             sellForm = SellForm()
@@ -183,7 +194,7 @@ def reviewIndex(request):
                 bk.statusbb = False
                 bk.save()
             except IndexError:
-                uybackForm = BuybackForm(request.POST)
+                buybackForm = BuybackForm(request.POST)
                 buybackForm.staus = False
                 if buybackForm.is_valid():
                     bk = buybackForm.save(commit = False)
