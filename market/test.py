@@ -11,7 +11,10 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'mmsite.settings'
 django.setup()
 
 from views import getPrivateKey
-
+from views import setOffline
 
 def getPK():
     return getPrivateKey()
+
+def stopbot():
+    return setOffline()
