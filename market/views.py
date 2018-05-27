@@ -20,6 +20,11 @@ def getPrivateKey():
     a = WavesClient.objects.all()[0]
     return a.privateKey
 
+def setOffline():
+    buy = Buy.objects.all()[0]
+    buy.status = False
+    buy.save()
+    return
 
 @login_required
 def waves(request):
@@ -164,9 +169,9 @@ def reviewIndex(request):
                 th.threshhold = request.POST['threshhold']
                 th.save()
             except IndexError:
-                treshholdForm = ThreshholdForm(request.POST)
-                if treshholdForm.is_valid():
-                    th = treshholdForm.save(commit = False)
+                threshholdform = ThreshholdForm(request.POST)
+                if threshholdform.is_valid():
+                    th = threshholdform.save(commit = False)
                     th.user = request.user
                     th.save()
         elif request.POST['submit'] == 'clear':
