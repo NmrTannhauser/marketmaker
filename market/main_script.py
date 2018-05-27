@@ -147,13 +147,10 @@ try:
     buyOrderBTC = ''
     buyOrderETH = ''
     buyOrderWAVES = ''
-    BTCpriceerror = 0
-    ETHpriceerror = 0
-    WAVESpriceerror = 0
     sellOrderBTC = ''
     sellOrderETH = ''
     sellOrderWAVES = ''
-    res = requests.get('http://127.0.0.1:80/json/').json()
+    res = requests.get('http://127.0.0.1:8000/json/').json()
     status = res['status']
     timeprice = res['TimePrice']
     a = RepeatedTimer(timeprice,getprices)
@@ -178,7 +175,7 @@ try:
     timepricetime = time.time()
     while True:
         try:
-            get = requests.get('http://127.0.0.1:80/json/').json()
+            get = requests.get('http://127.0.0.1:8000/json/').json()
             status = get['status']
             timeprice = get['TimePrice']
             a.interval = timeprice
@@ -194,14 +191,13 @@ try:
                         ETHprice = float(listpr[1])
                         WAVESprice = float(listpr[2])
                         timepricetime = time.time()
-                        if ((BTCprice == 0 or abs(newBTCprice-BTCprice)*100/newBTCprice>get['ThreshHold']) and get['ThreshHold']>0):
+                        if ((BTCprice == 0 or abs(newBTCprice-BTCprice)>get['ThreshHold']) and get['ThreshHold']>0):
                             BTCtradeallow = 0
-                            if (BTCpriceerror == 0):
-                                BTCpriceerror = 1
-                                if (BTCprice == 0):
-                                    send_new_posts('цена ВТС = 0')
-                                else:
-                                    send_new_posts('резкое изменение цены BTC')
+                            stopbot()
+                            if (BTCprice == 0):
+                                send_new_posts('цена ВТС = 0')
+                            else:
+                                send_new_posts('резкое изменение цены BTC')
                             #сообщение в телеграмм
                             if (buyBTCtime or sellBTCtime):
                                 my_address.cancelOpenOrders(cryptomix_btc)
@@ -211,16 +207,14 @@ try:
                                 sellOrderBTC = ''
                         else:
                             BTCtradeallow = 1
-                            BTCpriceerror = 0
                             newBTCprice = BTCprice
-                        if ((ETHprice == 0 or abs(newETHprice-ETHprice)*100/newETHprice>get['ThreshHold']) and get['ThreshHold']>0):
+                        if ((ETHprice == 0 or abs(newETHprice-ETHprice)>get['ThreshHold']) and get['ThreshHold']>0):
                             ETHtradeallow = 0
-                            if (ETHpriceerror == 0):
-                                ETHpriceerror = 1
-                                if (ETHprice == 0):
-                                    send_new_posts('цена ETH = 0')
-                                else:
-                                    send_new_posts('резкое изменение цены ETH')
+                            stopbot()
+                            if (BTCprice == 0):
+                                send_new_posts('цена ETH = 0')
+                            else:
+                                send_new_posts('резкое изменение цены ETH')
                             #сообщение в телеграмм
                             if (buyETHtime or sellETHtime):
                                 my_address.cancelOpenOrders(cryptomix_eth)
@@ -230,16 +224,14 @@ try:
                                 sellOrderETH = ''
                         else:
                             ETHtradeallow = 1
-                            ETHpriceerror = 0
                             newETHprice = ETHprice
-                        if ((WAVESprice == 0 or abs(newWAVESprice-WAVESprice)*100/newWAVESprice>get['ThreshHold']) and get['ThreshHold']>0):
+                        if ((WAVESprice == 0 or abs(newWAVESprice-WAVESprice)>get['ThreshHold']) and get['ThreshHold']>0):
                             WAVEStradeallow = 0
-                            if (WAVESpriceerror == 0):
-                                WAVESpriceerror = 1
-                                if (WAVESprice == 0):
-                                    send_new_posts('цена WAVES = 0')
-                                else:
-                                    send_new_posts('резкое изменение цены WAVES')
+                            stopbot()
+                            if (BTCprice == 0):
+                                send_new_posts('цена WAVES = 0')
+                            else:
+                                send_new_posts('резкое изменение цены WAVES')
                             #сообщение в телеграмм
                             if (buyWAVEStime or sellWAVEStime):
                                 my_address.cancelOpenOrders(cryptomix_waves)
@@ -249,7 +241,6 @@ try:
                                 sellOrderWAVES = ''
                         else:
                             WAVEStradeallow = 1
-                            WAVESpriceerror = 0
                             newWAVESprice = WAVESprice
                     except Exception as e:
                         logging.error(e)
@@ -301,10 +292,6 @@ try:
                             if (len(buyOrderBTC)>5):
                                 my_address.cancelOrderByID(cryptomix_btc, buyOrderBTC)
                                 buyBTCtime = 0
-                            if (len(sellOrderBTC)>5):
-                                my_address.cancelOrderByID(cryptomix_btc, sellOrderBTC)
-                                sellBTCtime = 0
-                                sellOrderBTC = ''
                             BTCpricetotal = newBTCprice*(1-get['Buy']['percentBTC']/100) if get['Buy']['percentBTC'] else newBTCprice
                             buyOrderBTC = mixorder('buy',cryptomix_btc,get['Buy']['amountBTCtoken'],BTCpricetotal)
                             buyBTCtime = time.time()
@@ -318,10 +305,6 @@ try:
                             if (len(buyOrderETH)>5):
                                 my_address.cancelOrderByID(cryptomix_eth, buyOrderETH)
                                 buyETHtime = 0
-                            if (len(sellOrderETH)>5):
-                                my_address.cancelOrderByID(cryptomix_eth, sellOrderETH)
-                                sellETHtime = 0
-                                sellOrderETH = ''
                             ETHpricetotal = newETHprice*(1-get['Buy']['percentETH']/100) if get['Buy']['percentETH'] else newETHprice
                             buyOrderETH = mixorder('buy',cryptomix_eth,get['Buy']['amountETHtoken'],ETHpricetotal)
                             buyETHtime = time.time()
@@ -335,10 +318,6 @@ try:
                             if (len(buyOrderWAVES)>5):
                                 my_address.cancelOrderByID(cryptomix_waves, buyOrderWAVES)
                                 buyWAVEStime = 0
-                            if (len(sellOrderWAVES)>5):
-                                my_address.cancelOrderByID(cryptomix_waves, sellOrderWAVES)
-                                sellWAVEStime = 0
-                                sellOrderWAVES = ''
                             WAVESpricetotal = newWAVESprice*(1-get['Buy']['percentWAVES']/100) if get['Buy']['percentWAVES'] else newWAVESprice
                             buyOrderWAVES = mixorder('buy',cryptomix_waves,get['Buy']['amountWAVEStoken'],WAVESpricetotal)
                             buyWAVEStime = time.time()
