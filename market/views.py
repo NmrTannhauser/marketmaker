@@ -35,11 +35,16 @@ def waves(request):
         except IndexError:
             wavesform = WavesClientForm()
     else:
-        wavesform = WavesClientForm(request.POST)
-        if wavesform.is_valid():
-            wv = wavesform.save(commit = False)
-            wv.user = request.user
-            wv.save()
+        try:
+            wf = WavesClient.objects.filter(user=request.user)[0]
+            wf.privateKey = request.POST['privateKey']
+            wf.save()
+        except IndexError:    
+            wavesform = WavesClientForm(request.POST)
+            if wavesform.is_valid():
+                wv = wavesform.save(commit = False)
+                wv.user = request.user
+                wv.save()
     context = {'wavesform': wavesform}
     return render(request, 'html/waves.html', context)
 
